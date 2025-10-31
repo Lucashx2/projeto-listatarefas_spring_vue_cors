@@ -122,4 +122,4 @@ Frontend → http://localhost:5173
 
 📚 Autor
 
-Desenvolvido como parte das atividades do curso de Análise e Desenvolvimento de Sistemas.
+Lucas Lopes Gonçalves
