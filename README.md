@@ -16,16 +16,11 @@ cd backend
 
 # 2. Rode o servidor
 mvn spring-boot:run
-```
 
 O backend vai rodar em http://localhost:8088.
 
-### 2. Frontend (Vue)
-
+2. Frontend (Vue)
 No segundo terminal, entre na pasta do frontend (app-tarefas):
-
-```bash
-
 # 1. Entre na pasta do frontend
 cd frontend/app-tarefas
 
@@ -34,12 +29,9 @@ npm install
 
 # 3. Rode o servidor de desenvolvimento
 npm run dev
-```
+O site vai estar disponível em http://localhost:5173.
 
-O site vai estar disponível em http://localhost:5173
-
-### 1. Qual era o erro?
-
+1. Qual era o erro?
 Quando eu rodei o projeto, o site abriu, mas não carregou nenhuma tarefa. Abri o console do navegador (F12) e vi este erro:
 
 Access to XMLHttpRequest at 'http://localhost:8088/api/tarefas' from origin 'http://localhost:5173' has been blocked by CORS policy...
@@ -50,14 +42,13 @@ O erro aconteceu porque o backend (Spring) não estava avisando o navegador que 
 
 (Obs: Antes de chegar nesse erro, eu também tive que arrumar um erro de porta no frontend (que estava chamando 8080 em vez de 8088) e um erro 404 porque o caminho no controller estava duplicado (/api/api/tarefas)).
 
-### 2. Como eu corrigi?
+2. Como eu corrigi?
 Para arrumar o CORS, eu criei uma classe de configuração global no backend. Assim, a regra vale para a API inteira.
 
 Criei este arquivo:
 
 Arquivo: backend/src/main/java/br/com/tarefas/api/config/WebConfig.java
 
-```bash
 Java
 
 package br.com.tarefas.api.config;
@@ -78,12 +69,9 @@ public class WebConfig implements WebMvcConfigurer {
             .allowCredentials(true);
     }
 }
-```
+Explicação:
+addMapping("/**"): Faz a regra valer para todos os endereços da API.
 
-### Explicação:
+allowedOrigins("http://localhost:5173"): Ela manda o backend avisar o navegador que o localhost:5173 tem permissão para fazer chamadas.
 
-1. addMapping("/**"): Faz a regra valer para todos os endereços da API.
-
-2. allowedOrigins("http://localhost:5173"): Ela manda o backend avisar o navegador que o localhost:5173 tem permissão para fazer chamadas.
-
-3. allowedMethods(...): Libera os métodos HTTP que o frontend vai usar (GET, POST, etc.).
+allowedMethods(...): Libera os métodos HTTP que o frontend vai usar (GET, POST, etc.).
