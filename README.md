@@ -1,55 +1,74 @@
-# 🧩 Projeto: Lista de Tarefas 06 (Spring Boot + Vue.js)
+🧩 Projeto: Lista de Tarefas 06 (Spring Boot + Vue.js)
 
-Esse projeto foi uma atividade da faculdade para criar uma aplicação com backend em Spring Boot e frontend em Vue.js. A tarefa principal era achar e corrigir um erro de CORS que foi colocado de propósito.
+Este projeto foi desenvolvido como uma atividade da faculdade, com o objetivo de criar uma aplicação fullstack usando Spring Boot no backend e Vue.js no frontend.
+A principal tarefa era encontrar e corrigir um erro de CORS inserido propositalmente no código.
 
-## 🚀 Como rodar o projeto
+🚀 Como Rodar o Projeto
 
-Você vai precisar abrir dois terminais.
+Você precisará abrir dois terminais — um para o backend e outro para o frontend.
 
-### 1. Backend (Spring)
+🖥️ 1. Backend (Spring Boot)
 
-No primeiro terminal, entre na pasta `backend`:
+No primeiro terminal:
 
-```bash
 # 1. Entre na pasta do backend
 cd backend
 
 # 2. Rode o servidor
 mvn spring-boot:run
 
-O backend vai rodar em http://localhost:8088.
 
-2. Frontend (Vue)
-No segundo terminal, entre na pasta do frontend (app-tarefas):
+O backend estará disponível em:
+👉 http://localhost:8088
+
+🌐 2. Frontend (Vue.js)
+
+No segundo terminal:
+
 # 1. Entre na pasta do frontend
 cd frontend/app-tarefas
 
-# 2. Instale o que precisa (só na primeira vez)
+# 2. Instale as dependências (apenas na primeira vez)
 npm install
 
 # 3. Rode o servidor de desenvolvimento
 npm run dev
-O site vai estar disponível em http://localhost:5173.
 
-1. Qual era o erro?
-Quando eu rodei o projeto, o site abriu, mas não carregou nenhuma tarefa. Abri o console do navegador (F12) e vi este erro:
+
+O site estará disponível em:
+👉 http://localhost:5173
+
+❌ Qual Era o Erro?
+
+Ao rodar o projeto, o site abria, mas não carregava nenhuma tarefa.
+No console do navegador (F12), aparecia o seguinte erro:
 
 Access to XMLHttpRequest at 'http://localhost:8088/api/tarefas' from origin 'http://localhost:5173' has been blocked by CORS policy...
 
-Causa do Erro: Isso é o erro de CORS. O navegador, por segurança, não deixou o frontend (que roda na porta :5173) pedir dados para o backend (que roda na porta :8088), porque as "origens" (as portas) são diferentes.
+🧠 Causa do Erro
 
-O erro aconteceu porque o backend (Spring) não estava avisando o navegador que o frontend tinha permissão para fazer isso. Faltou o backend enviar o cabeçalho Access-Control-Allow-Origin na resposta.
+O erro era de CORS (Cross-Origin Resource Sharing).
+O navegador bloqueou o frontend (porta 5173) de acessar o backend (porta 8088), pois as origens são diferentes.
 
-(Obs: Antes de chegar nesse erro, eu também tive que arrumar um erro de porta no frontend (que estava chamando 8080 em vez de 8088) e um erro 404 porque o caminho no controller estava duplicado (/api/api/tarefas)).
+O problema ocorreu porque o backend não estava enviando o cabeçalho:
 
-2. Como eu corrigi?
-Para arrumar o CORS, eu criei uma classe de configuração global no backend. Assim, a regra vale para a API inteira.
+Access-Control-Allow-Origin
 
-Criei este arquivo:
 
-Arquivo: backend/src/main/java/br/com/tarefas/api/config/WebConfig.java
+sem o qual o navegador não autoriza a comunicação entre origens distintas.
 
-Java
+💡 Antes disso, também foi necessário corrigir:
+
+A porta errada no frontend (estava chamando 8080 ao invés de 8088).
+
+Um erro 404, causado por duplicação no caminho do controller (/api/api/tarefas).
+
+🛠️ Como Corrigi o Problema
+
+A solução foi criar uma configuração global de CORS no backend, válida para toda a API.
+
+📄 Arquivo:
+backend/src/main/java/br/com/tarefas/api/config/WebConfig.java
 
 package br.com.tarefas.api.config;
 
@@ -62,16 +81,45 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**") // 1. Aplica a regra pra API inteira
-            .allowedOrigins("http://localhost:5173") // 2. Libera o nosso frontend
-            .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS") // 3. Libera os métodos
-            .allowedHeaders("*") 
+        registry.addMapping("/**") // 1. Aplica a regra para toda a API
+            .allowedOrigins("http://localhost:5173") // 2. Libera o frontend
+            .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS") // 3. Métodos permitidos
+            .allowedHeaders("*")
             .allowCredentials(true);
     }
 }
-Explicação:
-addMapping("/**"): Faz a regra valer para todos os endereços da API.
 
-allowedOrigins("http://localhost:5173"): Ela manda o backend avisar o navegador que o localhost:5173 tem permissão para fazer chamadas.
+🔍 Explicação
 
-allowedMethods(...): Libera os métodos HTTP que o frontend vai usar (GET, POST, etc.).
+addMapping("/**") → Aplica a configuração a todos os endpoints da API.
+
+allowedOrigins("http://localhost:5173") → Permite que o frontend local acesse o backend.
+
+allowedMethods(...) → Libera os métodos HTTP necessários (GET, POST, PUT, etc.).
+
+allowedHeaders("*") → Permite qualquer cabeçalho enviado pelo cliente.
+
+allowCredentials(true) → Autoriza o envio de cookies ou autenticações se necessário.
+
+✅ Resultado Final
+
+Após a correção, o frontend conseguiu se comunicar normalmente com o backend, carregando as tarefas sem erros de CORS.
+O projeto passou a funcionar como esperado. 🎯
+
+🧑‍💻 Tecnologias Utilizadas
+
+Backend: Spring Boot
+
+Frontend: Vue.js (Vite)
+
+Gerenciador de Dependências: Maven / npm
+
+Portas padrão:
+
+Backend → http://localhost:8088
+
+Frontend → http://localhost:5173
+
+📚 Autor
+
+Desenvolvido como parte das atividades do curso de Análise e Desenvolvimento de Sistemas.
